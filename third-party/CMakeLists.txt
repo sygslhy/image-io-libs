@@ -1,0 +1,5 @@
+add_subdirectory(libexif/impact)
+add_subdirectory(libturbojpeg/impact)
+add_subdirectory(libpng/impact)
+add_subdirectory(libtiff/impact)
+add_subdirectory(zlib/impact)
