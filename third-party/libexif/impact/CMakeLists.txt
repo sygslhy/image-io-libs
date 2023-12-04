@@ -12,7 +12,21 @@ set(LIBJPEG_SRC_DIR ${OUR_DIR}/libjpeg)
 set(LIBJPEG_PRIVATE_HDR_DIR ${OUR_DIR}/libjpeg)
 
 # public headers dependencies
-set(PUBLIC_HDRS ${PUBLIC_HDR_DIR}/libexif/exif-data.h ${PUBLIC_HDR_DIR}/libjpeg/jpeg-data.h)
+set(PUBLIC_HDRS ${PUBLIC_HDR_DIR}/libexif/_stdint.h
+                ${PUBLIC_HDR_DIR}/libexif/exif-data.h
+                ${PUBLIC_HDR_DIR}/libexif/exif-byte-order.h
+                ${PUBLIC_HDR_DIR}/libexif/exif-data-type.h
+                ${PUBLIC_HDR_DIR}/libexif/exif-ifd.h
+                ${PUBLIC_HDR_DIR}/libexif/exif-log.h
+                ${PUBLIC_HDR_DIR}/libexif/exif-tag.h
+                ${PUBLIC_HDR_DIR}/libexif/exif-content.h
+                ${PUBLIC_HDR_DIR}/libexif/exif-mnote-data.h
+                ${PUBLIC_HDR_DIR}/libexif/exif-mem.h
+                ${PUBLIC_HDR_DIR}/libexif/exif-entry.h
+                ${PUBLIC_HDR_DIR}/libexif/exif-format.h
+                ${PUBLIC_HDR_DIR}/libexif/exif-loader.h
+                ${PUBLIC_HDR_DIR}/libexif/exif-utils.h
+                ${PUBLIC_HDR_DIR}/libjpeg/jpeg-data.h)
 
 # private headers dependencies
 set(PRIVATE_HDRS
@@ -81,7 +95,6 @@ set(SRCS
 add_library(${TARGET} STATIC ${PRIVATE_HDRS} ${PUBLIC_HDRS} ${SRCS})
 set_target_properties(${TARGET} PROPERTIES PUBLIC_HEADER "${PUBLIC_HDRS}")
 
-
 # specify where the public headers of this library are
 target_include_directories(
     ${TARGET}
@@ -91,7 +104,7 @@ target_include_directories(
 
 target_compile_definitions(${TARGET} PRIVATE GETTEXT_PACKAGE="libexif-12")
 
-install(TARGETS ${TARGET} 
-        LIBRARY DESTINATION lib
-        PUBLIC_HEADER DESTINATION include
-        RUNTIME DESTINATION bin)
+install(TARGETS ${TARGET}
+    LIBRARY DESTINATION lib
+    PUBLIC_HEADER DESTINATION include/libexif
+    RUNTIME DESTINATION bin)
