@@ -35,6 +35,13 @@
 #endif
 #endif
 
+#ifdef _MSC_VER
+#define SNPRINTF(str, n, format, ...) \
+  _snprintf_s(str, n, _TRUNCATE, format, ##__VA_ARGS__)
+#else
+#define SNPRINTF  snprintf
+#endif
+
 #ifndef min
 #define min(a, b)  ((a) < (b) ? (a) : (b))
 #endif

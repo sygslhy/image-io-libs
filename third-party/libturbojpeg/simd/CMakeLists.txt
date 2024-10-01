@@ -96,6 +96,18 @@ if(NOT WIN32 AND (CMAKE_POSITION_INDEPENDENT_CODE OR ENABLE_SHARED))
   set(CMAKE_ASM_NASM_FLAGS "${CMAKE_ASM_NASM_FLAGS} -DPIC")
 endif()
 
+if(CPU_TYPE STREQUAL "x86_64" AND CMAKE_ASM_NASM_OBJECT_FORMAT MATCHES "^elf")
+  check_c_source_compiles("
+    #if (__CET__ & 3) == 0
+    #error \"CET not enabled\"
+    #endif
+    int main(void) { return 0; }" HAVE_CET)
+
+  if(HAVE_CET)
+    set(CMAKE_ASM_NASM_FLAGS "${CMAKE_ASM_NASM_FLAGS} -D__CET__")
+  endif()
+endif()
+
 string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UC)
 set(EFFECTIVE_ASM_NASM_FLAGS "${CMAKE_ASM_NASM_FLAGS} ${CMAKE_ASM_NASM_FLAGS_${CMAKE_BUILD_TYPE_UC}}")
 message(STATUS "CMAKE_ASM_NASM_FLAGS = ${EFFECTIVE_ASM_NASM_FLAGS}")
@@ -354,7 +366,8 @@ if(NOT NEON_INTRINSICS)
   separate_arguments(CMAKE_ASM_FLAGS_SEP UNIX_COMMAND "${CMAKE_ASM_FLAGS}")
   execute_process(COMMAND ${CMAKE_ASM_COMPILER} ${CMAKE_ASM_FLAGS_SEP}
       -x assembler-with-cpp -c ${CMAKE_CURRENT_BINARY_DIR}/gastest.S
-    RESULT_VARIABLE RESULT OUTPUT_VARIABLE OUTPUT ERROR_VARIABLE ERROR)
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} RESULT_VARIABLE RESULT
+    OUTPUT_VARIABLE OUTPUT ERROR_VARIABLE ERROR)
   if(NOT RESULT EQUAL 0)
     message(WARNING "GAS appears to be broken.  Using the full Neon SIMD intrinsics implementation.")
     set(NEON_INTRINSICS 1 CACHE INTERNAL "" FORCE)
@@ -449,6 +462,9 @@ elseif(CPU_TYPE STREQUAL "loongson" OR CPU_TYPE MATCHES "^mips64")
 set(CMAKE_REQUIRED_FLAGS -Wa,-mloongson-mmi,-mloongson-ext)
 
 check_c_source_compiles("
+  #if !(defined(__mips__) && __mips_isa_rev < 6)
+  #error Loongson MMI can't work with MIPS Release 6+
+  #endif
   int main(void) {
     int c = 0, a = 0, b = 0;
     asm (

@@ -17,7 +17,6 @@ set(HDRS
     ${HDR_DIR}/jdcoefct.h
     ${HDR_DIR}/jerror.h
     ${HDR_DIR}/jpegint.h
-    ${HDR_DIR}/jpegcomp.h
     ${HDR_DIR}/jinclude.h
     ${HDR_DIR}/jdct.h
     ${HDR_DIR}/jdmaster.h
@@ -27,7 +26,6 @@ set(HDRS
     ${HDR_DIR}/jdmainct.h
     ${HDR_DIR}/md5/md5.h
     ${HDR_DIR}/jsimd.h
-    ${HDR_DIR}/jpeg_nbits_table.h
     ${HDR_DIR}/jdhuff.h
     ${HDR_DIR}/jchuff.h
     ${HDR_DIR}/jsimd.h
@@ -40,7 +38,7 @@ set(HDRS
 )
 
 # public headers dependencies
-set(PUBLIC_HDRS ${HDR_DIR}/turbojpeg.h)
+set(PUBLIC_HDRS ${HDR_DIR}/turbojpeg.h ${HDR_DIR}/jpeglib.h)
 
 # sources dependencies
 set(SRCS
