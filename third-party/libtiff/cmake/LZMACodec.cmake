@@ -26,8 +26,9 @@
 
 # liblzma2
 set(LZMA_SUPPORT FALSE)
-find_package(LibLZMA)
-option(lzma "use liblzma (required for LZMA2 compression)" ${LZMA_FOUND})
+find_package(liblzma)
+
+option(lzma "use liblzma (required for LZMA2 compression)" ${LIBLZMA_FOUND})
 if (lzma AND LIBLZMA_FOUND)
     set(LZMA_SUPPORT TRUE)
 endif()
