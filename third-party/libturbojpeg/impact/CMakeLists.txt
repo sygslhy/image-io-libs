@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
-project(jpeg C ASM)
+project(turbojpeg C ASM)
 
 set(OUR_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
-set(TARGET jpeg)
+set(TARGET turbojpeg)
 set(SRC_DIR ${OUR_DIR})
 set(HDR_DIR ${OUR_DIR})
 
@@ -308,7 +308,7 @@ install(
     RUNTIME DESTINATION bin)
 
 install(
-    TARGETS jpeg
+    TARGETS jpeg-static
     LIBRARY DESTINATION lib
     PUBLIC_HEADER DESTINATION include
     RUNTIME DESTINATION bin)

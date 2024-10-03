@@ -163,11 +163,7 @@ if(NOT INLINE_WORKS)
 endif()
 
 # Generate files
-if(WIN32)
-    configure_file(../win/jconfig.h.in "${CMAKE_CURRENT_BINARY_DIR}/libjpeg/jconfig.h")
-else()
-    configure_file(../jconfig.h.in "${CMAKE_CURRENT_BINARY_DIR}/libjpeg/jconfig.h")
-endif()
+configure_file(../jconfig.h.in "${CMAKE_CURRENT_BINARY_DIR}/libjpeg/jconfig.h")
 configure_file(../jconfigint.h.in "${CMAKE_CURRENT_BINARY_DIR}/libjpeg/jconfigint.h")
 configure_file(../jversion.h.in "${CMAKE_CURRENT_BINARY_DIR}/libjpeg/jversion.h")
 if(UNIX)

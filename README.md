@@ -5,3 +5,7 @@ cd build
 cmake .. # by using 'cmake -DCMAKE_INSTALL_PREFIX=/usr ..' we can change the install directory.
 make 
 sudo make install # to avoid the permission issue, it will install the headers and libs to /usr/local by default.
+
+
+Windows:
+cmake -DCMAKE_INSTALL_PREFIX=D:\msys64\mingw64 ..
