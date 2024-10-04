@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
-project(turbojpeg C ASM)
+project(jpeg C ASM)
 
 set(OUR_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
-set(TARGET turbojpeg)
+set(TARGET jpeg)
 set(SRC_DIR ${OUR_DIR})
 set(HDR_DIR ${OUR_DIR})
 
@@ -37,14 +37,11 @@ set(HDRS
     ${HDR_DIR}/cderror.h
     ${CMAKE_CURRENT_BINARY_DIR}/libjpeg/jconfigint.h
     ${CMAKE_CURRENT_BINARY_DIR}/libjpeg/jversion.h
-    ${CMAKE_CURRENT_BINARY_DIR}/libjpeg/jconfig.h
-)
+    ${CMAKE_CURRENT_BINARY_DIR}/libjpeg/jconfig.h)
 
 # public headers dependencies
-set(PUBLIC_HDRS ${HDR_DIR}/turbojpeg.h
-                ${HDR_DIR}/jpeglib.h
-                ${HDR_DIR}/jmorecfg.h
-)
+set(PUBLIC_HDRS ${HDR_DIR}/turbojpeg.h ${HDR_DIR}/jpeglib.h
+                ${HDR_DIR}/jmorecfg.h)
 
 # sources dependencies
 set(SRCS
@@ -106,8 +103,7 @@ set(SRCS
     ${SRC_DIR}/rdbmp.c
     ${SRC_DIR}/rdppm.c
     ${SRC_DIR}/wrbmp.c
-    ${SRC_DIR}/wrppm.c
-)
+    ${SRC_DIR}/wrppm.c)
 
 # CPU x86_64
 if(CPU_TYPE STREQUAL "x86_64")
@@ -140,8 +136,7 @@ if(CPU_TYPE STREQUAL "x86_64")
         ${SRC_DIR}/simd/x86_64/jdsample-avx2.asm
         ${SRC_DIR}/simd/x86_64/jfdctint-avx2.asm
         ${SRC_DIR}/simd/x86_64/jidctint-avx2.asm
-        ${SRC_DIR}/simd/x86_64/jquanti-avx2.asm
-    )
+        ${SRC_DIR}/simd/x86_64/jquanti-avx2.asm)
 
     if(CMAKE_ASM_NASM_OBJECT_FORMAT MATCHES "macho*")
         set(CMAKE_ASM_NASM_FLAGS "${CMAKE_ASM_NASM_FLAGS} -DMACHO")
@@ -155,7 +150,10 @@ if(CPU_TYPE STREQUAL "x86_64")
     endif()
 
     set(CMAKE_ASM_NASM_FLAGS "${CMAKE_ASM_NASM_FLAGS} -D__x86_64__")
-    set(CMAKE_ASM_NASM_FLAGS "${CMAKE_ASM_NASM_FLAGS} -I\"${OUR_DIR}/simd/nasm/\" -I\"${OUR_DIR}/simd/x86_64/\"")
+    set(CMAKE_ASM_NASM_FLAGS
+        "${CMAKE_ASM_NASM_FLAGS} -I\"${OUR_DIR}/simd/nasm/\" -I\"${OUR_DIR}/simd/x86_64/\""
+    )
+    # set(SIMD_TARGET_OBJECTS $<TARGET_OBJECTS:simd>)
 endif()
 
 # CPU ARM
@@ -171,14 +169,16 @@ if(CPU_TYPE STREQUAL "arm64" OR CPU_TYPE STREQUAL "arm")
         ${SRC_DIR}/simd/arm/jfdctfst-neon.c
         ${SRC_DIR}/simd/arm/jidctred-neon.c
         ${SRC_DIR}/simd/arm/jidctfst-neon.c
-        ${SRC_DIR}/simd/arm/jcphuff-neon.c
-    )
+        ${SRC_DIR}/simd/arm/jcphuff-neon.c)
     if(CPU_TYPE STREQUAL "arm64")
-        set(SIMD_SOURCES ${SIMD_SOURCES} ${SRC_DIR}/simd/arm/aarch64/jsimd.c ${SRC_DIR}/simd/arm/aarch64/jsimd_neon.S)
+        set(SIMD_SOURCES ${SIMD_SOURCES} ${SRC_DIR}/simd/arm/aarch64/jsimd.c
+                         ${SRC_DIR}/simd/arm/aarch64/jsimd_neon.S)
     endif()
     if(CPU_TYPE STREQUAL "arm")
-        set(SIMD_SOURCES ${SIMD_SOURCES} ${SRC_DIR}/simd/arm/aarch32/jsimd.c ${SRC_DIR}/simd/arm/aarch32/jsimd_neon.S)
+        set(SIMD_SOURCES ${SIMD_SOURCES} ${SRC_DIR}/simd/arm/aarch32/jsimd.c
+                         ${SRC_DIR}/simd/arm/aarch32/jsimd_neon.S)
     endif()
+    # set(SIMD_TARGET_OBJECTS $<TARGET_OBJECTS:simd>)
 endif()
 
 # we're building a static library
@@ -187,16 +187,128 @@ set_target_properties(${TARGET} PROPERTIES PUBLIC_HEADER "${PUBLIC_HDRS}")
 
 # specify where the public headers of this library are
 target_include_directories(
-    ${TARGET} PUBLIC $<BUILD_INTERFACE:${HDR_DIR}> $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/libjpeg>
-                     $<INSTALL_INTERFACE:include>
-)
+    ${TARGET}
+    PUBLIC $<BUILD_INTERFACE:${HDR_DIR}>
+           $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/libjpeg>
+           $<INSTALL_INTERFACE:include>)
 
 target_compile_definitions(${TARGET} PRIVATE BMP_SUPPORTED PPM_SUPPORTED)
 
 set_property(TARGET ${TARGET} PROPERTY LIBJPEGT_SOURCE_DIR ${HDR_DIR})
 
-install(TARGETS ${TARGET} 
-        LIBRARY DESTINATION lib
-        PUBLIC_HEADER DESTINATION include
-        RUNTIME DESTINATION bin)
+set(JPEG_HDRS
+    ${CMAKE_CURRENT_BINARY_DIR}/libjpeg/jconfigint.h
+    ${CMAKE_CURRENT_BINARY_DIR}/libjpeg/jversion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/libjpeg/jconfig.h)
 
+set(JPEG16_SOURCES
+    ${SRC_DIR}/jcapistd.c
+    ${SRC_DIR}/jccolor.c
+    ${SRC_DIR}/jcdiffct.c
+    ${SRC_DIR}/jclossls.c
+    ${SRC_DIR}/jcmainct.c
+    ${SRC_DIR}/jcprepct.c
+    ${SRC_DIR}/jcsample.c
+    ${SRC_DIR}/jdapistd.c
+    ${SRC_DIR}/jdcolor.c
+    ${SRC_DIR}/jddiffct.c
+    ${SRC_DIR}/jdlossls.c
+    ${SRC_DIR}/jdmainct.c
+    ${SRC_DIR}/jdpostct.c
+    ${SRC_DIR}/jdsample.c
+    ${SRC_DIR}/jutils.c)
+set(JPEG12_SOURCES
+    ${JPEG16_SOURCES}
+    ${SRC_DIR}/jccoefct.c
+    ${SRC_DIR}/jcdctmgr.c
+    ${SRC_DIR}/jdcoefct.c
+    ${SRC_DIR}/jddctmgr.c
+    ${SRC_DIR}/jdmerge.c
+    ${SRC_DIR}/jfdctfst.c
+    ${SRC_DIR}/jfdctint.c
+    ${SRC_DIR}/jidctflt.c
+    ${SRC_DIR}/jidctfst.c
+    ${SRC_DIR}/jidctint.c
+    ${SRC_DIR}/jidctred.c
+    ${SRC_DIR}/jquant1.c
+    ${SRC_DIR}/jquant2.c)
+set(JPEG_SOURCES
+    ${JPEG12_SOURCES}
+    ${SRC_DIR}/jcapimin.c
+    ${SRC_DIR}/jchuff.c
+    ${SRC_DIR}/jcicc.c
+    ${SRC_DIR}/jcinit.c
+    ${SRC_DIR}/jclhuff.c
+    ${SRC_DIR}/jcmarker.c
+    ${SRC_DIR}/jcmaster.c
+    ${SRC_DIR}/jcomapi.c
+    ${SRC_DIR}/jcparam.c
+    ${SRC_DIR}/jcphuff.c
+    ${SRC_DIR}/jctrans.c
+    ${SRC_DIR}/jdapimin.c
+    ${SRC_DIR}/jdatadst.c
+    ${SRC_DIR}/jdatasrc.c
+    ${SRC_DIR}/jdhuff.c
+    ${SRC_DIR}/jdicc.c
+    ${SRC_DIR}/jdinput.c
+    ${SRC_DIR}/jdlhuff.c
+    ${SRC_DIR}/jdmarker.c
+    ${SRC_DIR}/jdmaster.c
+    ${SRC_DIR}/jdphuff.c
+    ${SRC_DIR}/jdtrans.c
+    ${SRC_DIR}/jerror.c
+    ${SRC_DIR}/jfdctflt.c
+    ${SRC_DIR}/jmemmgr.c
+    ${SRC_DIR}/jmemnobs.c
+    ${SRC_DIR}/jpeg_nbits.c)
+
+# Compile a separate version of these source files with 12-bit and 16-bit data
+# precision.
+add_library(jpeg12-static OBJECT ${JPEG12_SOURCES})
+set_property(TARGET jpeg12-static PROPERTY COMPILE_FLAGS "-DBITS_IN_JSAMPLE=12")
+set_target_properties(jpeg12-static PROPERTIES PUBLIC_HEADER "${JPEG_HDRS}")
+target_include_directories(
+    jpeg12-static
+    PUBLIC $<BUILD_INTERFACE:${HDR_DIR}>
+           $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/libjpeg>
+           $<INSTALL_INTERFACE:include>)
+
+add_library(jpeg16-static OBJECT ${JPEG16_SOURCES})
+set_target_properties(jpeg16-static PROPERTIES PUBLIC_HEADER "${JPEG_HDRS}")
+target_include_directories(
+    jpeg16-static
+    PUBLIC $<BUILD_INTERFACE:${HDR_DIR}>
+           $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/libjpeg>
+           $<INSTALL_INTERFACE:include>)
+
+set_property(TARGET jpeg16-static PROPERTY COMPILE_FLAGS "-DBITS_IN_JSAMPLE=16")
+add_library(
+    jpeg-static STATIC
+    ${SRCS}
+    ${JPEG_SOURCES}
+    ${SIMD_SOURCES}
+    ${SIMD_TARGET_OBJECTS}
+    ${SIMD_OBJS}
+    $<TARGET_OBJECTS:jpeg12-static>
+    $<TARGET_OBJECTS:jpeg16-static>)
+
+target_include_directories(
+    jpeg-static
+    PUBLIC $<BUILD_INTERFACE:${HDR_DIR}>
+           $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/libjpeg>
+           $<INSTALL_INTERFACE:include>)
+if(NOT MSVC)
+    set_target_properties(jpeg-static PROPERTIES OUTPUT_NAME jpeg)
+endif()
+
+install(
+    TARGETS ${TARGET}
+    LIBRARY DESTINATION lib
+    PUBLIC_HEADER DESTINATION include
+    RUNTIME DESTINATION bin)
+
+install(
+    TARGETS jpeg
+    LIBRARY DESTINATION lib
+    PUBLIC_HEADER DESTINATION include
+    RUNTIME DESTINATION bin)
