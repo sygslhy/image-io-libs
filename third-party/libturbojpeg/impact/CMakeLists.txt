@@ -41,7 +41,8 @@ set(HDRS
 
 # public headers dependencies
 set(PUBLIC_HDRS ${HDR_DIR}/turbojpeg.h ${HDR_DIR}/jpeglib.h
-                ${HDR_DIR}/jmorecfg.h ${CMAKE_CURRENT_BINARY_DIR}/libjpeg/jconfig.h)
+                ${HDR_DIR}/jmorecfg.h ${CMAKE_CURRENT_BINARY_DIR}/libjpeg/jconfig.h
+                ${HDR_DIR}/jerror.h)
 
 # sources dependencies
 set(SRCS
